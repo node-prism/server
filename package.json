@@ -1,0 +1,74 @@
+{
+  "name": "@prism/server",
+  "version": "1.5.0",
+  "description": "",
+  "main": "./lib/index.js",
+  "type": "module",
+  "imports": {
+    "#internal/*": "./lib/internal/*",
+    "#shared/*": "./lib/shared/*"
+  },
+  "exports": {
+    ".": "./lib/index.js",
+    "./http": "./lib/internal/http/index.js",
+    "./ws": "./lib/internal/ws/index.js",
+    "./hash": "./lib/internal/hash/index.js",
+    "./queues": "./lib/internal/queues/index.js",
+    "./cache": "./lib/internal/cache/index.js",
+    "./jwt": "./lib/internal/jwt/index.js",
+    "./shared": "./lib/shared/index.js",
+    "./schedules": "./lib/internal/schedules/index.js"
+  },
+  "typesVersions": {
+    "*": {
+      "http": [
+        "lib/internal/http/index.d.ts"
+      ],
+      "ws": [
+        "lib/internal/ws/index.d.ts"
+      ],
+      "queues": [
+        "lib/internal/queues/index.d.ts"
+      ],
+      "cache": [
+        "lib/internal/cache/index.d.ts"
+      ],
+      "jwt": [
+        "lib/internal/jwt/index.d.ts"
+      ],
+      "hash": [
+        "lib/internal/hash/index.d.ts"
+      ],
+      "shared": [
+        "lib/shared/index.d.ts"
+      ],
+      "schedules": [
+        "lib/internal/schedules/index.d.ts"
+      ]
+    }
+  },
+  "scripts": {
+    "dev": "tsc --watch --declaration"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node-cron": "^3.0.1",
+    "nodemon": "^2.0.15",
+    "typescript": "^4.5.5"
+  },
+  "dependencies": {
+    "@types/express": "^4.17.13",
+    "@types/node": "^17.0.18",
+    "@types/ws": "^8.2.3",
+    "chalk": "^5.0.0",
+    "dotenv": "^16.0.0",
+    "ecdsa-sig-formatter": "^1.0.11",
+    "ejs": "^3.1.6",
+    "express": "^4.17.3",
+    "fast-glob": "^3.2.11",
+    "node-cron": "^3.0.0",
+    "path-to-regexp": "^6.2.0",
+    "ws": "^8.5.0"
+  }
+}
