@@ -165,7 +165,7 @@ A `_middleware.ts` file is expected to have a default export which is an array o
 Express-compatible middleware handlers.
 
 ```typescript
-/src/app/http/user/_middleware.ts
+// /src/app/http/user/_middleware.ts
 
 export default [
    async (c: Context) => {
@@ -179,7 +179,7 @@ You can also export a `middleware` object from the handler file, where the objec
 are the request method that the middleware will be applied to.
 
 ```typescript
-/src/app/http/user/profile.ts
+// /src/app/http/user/profile.ts
 
 export async function get(c: Context) {}
 export async function post(c: Context) {}
