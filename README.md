@@ -78,12 +78,12 @@ Handlers are wrapped in order to automatically handle Promise rejections
 or thrown errors by passing them to the reigstered Express error middlewares.
 
 ```typescript
-async function throws() {
+function throws() {
   throw new Error("Whoops!");
 }
 
 export async function get(c: Context) {
-  await throws();
+  throws();
   return Respond.OK(c, { hello: "world" });
 }
 ```
