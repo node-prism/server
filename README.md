@@ -40,12 +40,13 @@ await createAPI("src/app");
 
 # .env
 
-For convenience, any `.env` file placed alongside `package.json` is automatically loaded with `dotenv`.
+For convenience, an `.env` file placed alongside `package.json` is automatically loaded with `dotenv`.
 
-You can use this to configure prism's loglevel:
+This is a good place to set prism's logging verbosity, as well as whatever other application-specific
+environment variables that your application might need at runtime.
 
-```yml
-// /.env
+```shell
+# /.env
 LOGLEVEL=4 (4=DEBUG, 3=ERROR, 2=WARN, 1=INFO)
 ```
 
@@ -107,13 +108,15 @@ core.app.use((err, req, res, next) => {
 
 ## Flattened paths
 
-You can "flatten" a path on the filesystem by prefixing it with an underscore. In other words,
+You can "flatten" a path on the filesystem by prefixing folders in its path with an underscore. In other words,
 
 ```bash
 /src/app/http/user/_authorized/profile.ts
 ```
 
-...is accessed at /user/profile. This is particularly useful for scoping your middlewares. Consider the following folder structure:
+...is accessed at `/user/profile` because the `_authorized` folder is ignored as part of the path, i.e. it is flattened.
+
+This flattening behavior is particularly useful when scoping your middlewares. Consider the following folder structure:
 
 ```bash
 ├── app
@@ -126,7 +129,8 @@ You can "flatten" a path on the filesystem by prefixing it with an underscore. I
 └── index.ts
 ```
 
-The middleware in `_middleware.ts` is only applied to `/user/profile`, not `/user`. More about middleware below.
+The result of the above is that requests made to `/user` are not behind authorization middleware whereas
+requests to `/user/profile` are.
 
 
 ## Reading the request body / query / path / headers
