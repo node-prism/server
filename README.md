@@ -8,34 +8,37 @@ API structure.
 import { createAPI } from "@prism/server";
 
 await createAPI("src/app");
+```
 
-// Directory listing of a sample project:
-// ├── app
-// │   ├── errors.ts
-// │   ├── http
-// │   │   ├── _middleware.ts
-// │   │   ├── auth
-// │   │   │   └── login.ts
-// │   │   ├── mail
-// │   │   │   └── index.ts
-// │   │   └── user
-// │   │       ├── [id].ts
-// │   │       └── index.ts
-// │   ├── http_middlewares
-// │   ├── queues
-// │   │   └── mail.ts
-// │   ├── schedules
-// │   │   └── metrics.ts
-// │   ├── socket
-// │   │   └── _authorized
-// │   │       ├── _middleware.ts
-// │   │       └── jobs
-// │   │           └── start.ts
-// │   └── socket_middlewares
-// │       └── authorize.ts
-// ├── index.ts
-// └── views
-//     └── 404.ejs
+The typical folder structure looks something like this:
+
+```bash
+├── app
+│   ├── errors.ts
+│   ├── http
+│   │   ├── _middleware.ts
+│   │   ├── auth
+│   │   │   └── login.ts
+│   │   ├── mail
+│   │   │   └── index.ts
+│   │   └── user
+│   │       ├── [id].ts
+│   │       └── index.ts
+│   ├── http_middlewares
+│   ├── queues
+│   │   └── mail.ts
+│   ├── schedules
+│   │   └── metrics.ts
+│   ├── socket
+│   │   └── _authorized
+│   │       ├── _middleware.ts
+│   │       └── jobs
+│   │           └── start.ts
+│   └── socket_middlewares
+│       └── authorize.ts
+├── index.ts
+└── views
+    └── 404.ejs
 ```
 
 # .env
