@@ -70,10 +70,21 @@ export async function del(c: Context) {}   // DELETE /user
 Path parameters are supported:
 
 ```typescript
-// /src/app/http/user/[id].ts
+// /src/app/http/user/[id].ts -> /user/:id
 
 export async function get(c: Context, { path: { id } }) {
-  return Respond.OK(c, `retrieved user ${id}`);;
+  return Respond.OK(c, { id });
+}
+```
+
+Wildcards are supported:
+
+```typescript
+// /src/app/http/user/[id]/[...rest].ts -> /user/:id/:rest*
+
+export async function get(c: Context, { path: { id, rest } }) {
+  // c.req.params will include whatever other path params exist
+  return Respond.OK(c, { id, rest });
 }
 ```
 
