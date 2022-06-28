@@ -1,13 +1,12 @@
 import glob from "fast-glob";
 import assert from "node:assert";
 import EventEmitter from "node:events";
-
-import loadModule from "#internal/loader/main.js";
-import duration from "#shared/duration.js";
-import log, { LogLevel } from "#shared/logger.js";
-import { invariant, sleep } from "#shared/utils.js";
-import { getUuid } from "#shared/uuid.js";
-import { HTTPCore, QueueModuleExports } from "../../shared/definitions.js";
+import { QueueModuleExports } from "../../shared/definitions";
+import logger, { LogLevel } from "../../shared/logger";
+import { invariant } from "../../shared/utils";
+import { duration, getUuid, sleep } from "../../shared";
+import { HTTPCore } from "../../internal/http";
+import loadModule from "../../internal/loader/main";
 
 
 interface QueueConfig {
@@ -55,7 +54,7 @@ export async function createQueues(_core: HTTPCore, rootDir: string) {
     // Throws if !module.queue || !module.default || module.default != function
     validateQueueModuleExports(module);
 
-    log({ level: LogLevel.DEBUG, scope: "queues" }, "creating queue defined in", filename);
+    logger({ level: LogLevel.DEBUG, scope: "queues" }, "creating queue defined in", filename);
 
     module.queue.executor = module.default;
 
@@ -107,32 +106,32 @@ export default class Queue<Payload> extends EventEmitter {
     this.emitter.on("new", (d: { task: { uuid: string, payload: Payload } }) => {
       this.emit("new", d);
       this.parentQueue?.emit("new", d);
-      log({ level: LogLevel.DEBUG }, "queue: new task");
+      logger({ level: LogLevel.DEBUG }, "queue: new task");
     });
     this.emitter.on("newgroup", (name: string) => {
       this.emit("newgroup", name);
       this.parentQueue?.emit("newgroup", name);
-      log({ level: LogLevel.DEBUG }, "queue: new group");
+      logger({ level: LogLevel.DEBUG }, "queue: new group");
     });
     this.emitter.on("timeout", (d: { task: { uuid: string } }) => {
       this.emit("timeout", d);
       this.parentQueue?.emit("timeout", d);
-      log({ level: LogLevel.DEBUG }, "queue: task timeout");
+      logger({ level: LogLevel.DEBUG }, "queue: task timeout");
     });
     this.emitter.on("complete", (d: { task: { uuid: string, payload: Payload } }) => {
       this.emit("complete", d);
       this.parentQueue?.emit("complete", d);
-      log({ level: LogLevel.DEBUG }, "queue: task complete");
+      logger({ level: LogLevel.DEBUG }, "queue: task complete");
     });
     this.emitter.on("groupdestroy", (name: string) => {
       this.emit("groupdestroy", name);
       this.parentQueue?.emit("groupdestroy", name);
-      log({ level: LogLevel.DEBUG }, "queue: group destroyed");
+      logger({ level: LogLevel.DEBUG }, "queue: group destroyed");
     });
     this.emitter.on("failed", (d: { task: { uuid: string, payload: Payload } }) => {
       this.emit("failed", d);
       this.parentQueue?.emit("failed", d);
-      log({ level: LogLevel.DEBUG }, "queue: task failed");
+      logger({ level: LogLevel.DEBUG }, "queue: task failed");
     });
   }
 

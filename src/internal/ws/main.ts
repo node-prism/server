@@ -2,13 +2,13 @@ import glob from "fast-glob";
 import { IncomingMessage, STATUS_CODES } from "node:http";
 import path from "node:path";
 import { parse } from "node:url";
+import { HTTPCore, SocketModuleExports } from "../../shared/definitions";
+import logger, { LogLevel } from "../../shared/logger";
 import { WebSocket } from "ws";
+import loadModule from "../../internal/loader/main";
+import loadMiddleware from "../../internal/loader/middleware";
 
-import loadModule from "#internal/loader/main.js";
-import loadMiddleware from "#internal/loader/middleware.js";
-import { HTTPCore, SocketModuleExports } from "#shared/definitions.js";
-import log, { LogLevel } from "#shared/logger.js";
-import { SocketMiddleware, WebSocketTokenServer } from "./server.js";
+import { SocketMiddleware, WebSocketTokenServer } from "./server";
 
 /**
  * socket
@@ -50,7 +50,7 @@ export async function createSocketHandlers(core: HTTPCore, rootDir: string) {
     if (!module.default) throw new Error(`Socket command modules must export default.`);
 
     let route = parentDirname(filename.replace(`${rootDir}/socket/`, "/"));
-    log({ level: LogLevel.DEBUG, scope: "ws" }, "socket namespace:", route);
+    logger({ level: LogLevel.DEBUG, scope: "ws" }, "socket namespace:", route);
 
     route = route.replace(/\/\_(?:\w|['-]\w)+\//g, "/");
 
@@ -66,7 +66,7 @@ export async function createSocketHandlers(core: HTTPCore, rootDir: string) {
 
     // handlers.get(route).registerCommand(cmd, module.default, ...middleware);
     handlers.get("/").registerCommand(cmd, module.default, ...middleware);
-    log({ level: LogLevel.DEBUG, scope: "ws" }, `command: ${cmd} (wscat -c ws://localhost:PORT/ -x '{"command": "${cmd}", "payload": {}}')`);
+    logger({ level: LogLevel.DEBUG, scope: "ws" }, `command: ${cmd} (wscat -c ws://localhost:PORT/ -x '{"command": "${cmd}", "payload": {}}')`);
   }
 
   core.server.on("upgrade", (req, socket, head) => {

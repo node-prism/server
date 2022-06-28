@@ -1,16 +1,17 @@
-import express from "express";
 import dotenv from "dotenv";
+import express from "express";
 import { createServer } from "http";
-
-import createHTTPHandlers from "./internal/http/main.js";
-import createErrorHandlers from "./internal/http/errors.js";
-import { createSocketHandlers } from "#internal/ws/main.js";
-import { createQueues } from "#internal/queues/index.js";
-import logger, { LogLevel } from "#shared/logger.js";
-import { HTTPCore } from "./shared/definitions.js";
-import selfPath from "#shared/path.js";
 import path from "path";
-import createSchedules from "#internal/schedules/index.js";
+import createErrorHandlers from "./internal/http/errors";
+import createHTTPHandlers from "./internal/http/main";
+import { createQueues } from "./internal/queues";
+import createSchedules from "./internal/schedules";
+import { createSocketHandlers } from "./internal/ws/main";
+import { LogLevel } from "./shared";
+import { HTTPCore } from "./shared/definitions";
+import logger from "./shared/logger";
+import selfPath from "./shared/path";
+
 
 dotenv.config();
 
@@ -63,4 +64,5 @@ export async function createAPI(
   return core;
 }
 
-export { HTTPCore };
+export {HTTPCore};
+

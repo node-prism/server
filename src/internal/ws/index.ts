@@ -1,3 +1,3 @@
-import { WSContext } from "./server.js";
+import { WSContext } from "./server";
 
 export { WSContext as Context };

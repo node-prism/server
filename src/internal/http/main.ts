@@ -3,17 +3,18 @@ import glob from "fast-glob";
 import path from "node:path";
 import { isPromise } from "node:util/types";
 import { Key, pathToRegexp } from "path-to-regexp";
-
-import loadModule from "#internal/loader/main.js";
-import loadMiddleware from "#internal/loader/middleware.js";
-import log, { LogLevel } from "#shared/logger.js";
-import { invariant } from "#shared/utils.js";
+import { LogLevel } from "../../shared";
 import {
   HTTPCore,
   HTTPModuleExports,
   RouteDefinition,
-} from "#shared/definitions.js";
-import ExpressContext from "./context.js";
+} from "../../shared/definitions";
+import logger from "../../shared/logger";
+import { invariant } from "../../shared/utils";
+import loadModule from "../../internal/loader/main";
+import loadMiddleware from "../../internal/loader/middleware";
+
+import ExpressContext from "./context";
 
 function getRelevantRoute(route: string, req: Request) {
   let ret = {
@@ -78,11 +79,11 @@ function createRouteHandlers(
   route: string,
   core: HTTPCore
 ) {
-  log({ level: LogLevel.DEBUG, scope: "http" }, route);
+  logger({ level: LogLevel.DEBUG, scope: "http" }, route);
 
   if (module.default && typeof module.default === "function") {
     core.app.all(route, ...middleware, wrapHandler(module.default, route));
-    log(
+    logger(
       { level: LogLevel.DEBUG, scope: "http" },
       `${route} | method: any -> export default`
     );
@@ -106,7 +107,7 @@ function createRouteHandlers(
         wrapHandler(module[method], route)
       );
 
-      log(
+      logger(
         { level: LogLevel.DEBUG, scope: "http" },
         `${route} | method: ${
           method === "del" ? "DELETE" : method.toUpperCase()
@@ -182,7 +183,7 @@ export default async function createHTTPHandlers(
 
     dupes.set(signature, filename);
 
-    log(
+    logger(
       { level: LogLevel.DEBUG, scope: "http" },
       `route ${route} (${filename})`
     );

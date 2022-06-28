@@ -1,11 +1,11 @@
-import log, { LogLevel } from "#shared/logger.js";
+import logger, { LogLevel } from "../../shared/logger";
 import glob from "fast-glob";
 import cron from "node-cron";
-import { HTTPCore, ScheduleModuleExports } from "../../shared/definitions.js";
-import { invariant } from "../../shared/utils.js";
-import loadModule from "../loader/main.js";
+import { HTTPCore, ScheduleModuleExports } from "../../shared/definitions";
+import { invariant } from "../../shared/utils";
+import loadModule from "../../internal/loader/main";
 
-export { CRON } from "./common.js";
+export { CRON } from "./common";
 
 export interface Schedule {
   /** A cron expression. */
@@ -48,7 +48,7 @@ export default async function createSchedules(core: HTTPCore, rootDir: string) {
       throw new Error(`invalid cron schedule: ${module.config.cron}`);
     }
 
-    log({ level: LogLevel.DEBUG, scope: "schedules" }, "creating schedule defined in", filename);
+    logger({ level: LogLevel.DEBUG, scope: "schedules" }, "creating schedule defined in", filename);
 
     cron.schedule(
       module.config.cron,

@@ -1,6 +1,6 @@
 import path from "node:path";
 import fs from "node:fs/promises";
-import log, { LogLevel } from "#shared/logger.js";
+import logger, { LogLevel } from "../../shared/logger";
 
 export default async function loadMiddleware<T>(dirname: string, filename: string, defaultMiddleware: T[] = []): Promise<T[]> {
   const parent =
@@ -28,7 +28,7 @@ export default async function loadMiddleware<T>(dirname: string, filename: strin
   if (Object.keys(exports).length > 1 || Object.keys(exports).length < 1)
     throw new Error("Middleware should export only one object: default");
 
-  log({ level: LogLevel.DEBUG, scope: "mw" }, "use middleware", path.join(dirname, path.basename(absolute)));
+  logger({ level: LogLevel.DEBUG, scope: "mw" }, "use middleware", path.join(dirname, path.basename(absolute)));
 
   return [...parent, ...exports.default];
 }

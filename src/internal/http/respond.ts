@@ -1,5 +1,5 @@
 import { isNativeError } from "node:util/types";
-import Context from "./context.js";
+import Context from "./context";
 
 export interface ISuccessResponse {
   code: number;

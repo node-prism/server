@@ -11,11 +11,7 @@
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "suppressImplicitAnyIndexErrors": true,
-    "baseUrl": ".",
-    "paths": {
-      "#internal/*": ["src/internal/*"],
-      "#shared/*": ["src/shared/*"]
-    }
+    "baseUrl": "."
   },
   "exclude": [
     "node_modules",

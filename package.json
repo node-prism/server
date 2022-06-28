@@ -8,10 +8,6 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "imports": {
-    "#internal/*": "./lib/internal/*",
-    "#shared/*": "./lib/shared/*"
-  },
   "exports": {
     ".": "./lib/index.js",
     "./http": "./lib/internal/http/index.js",
@@ -22,34 +18,6 @@
     "./jwt": "./lib/internal/jwt/index.js",
     "./shared": "./lib/shared/index.js",
     "./schedules": "./lib/internal/schedules/index.js"
-  },
-  "typesVersions": {
-    "*": {
-      "http": [
-        "lib/internal/http/index.d.ts"
-      ],
-      "ws": [
-        "lib/internal/ws/index.d.ts"
-      ],
-      "queues": [
-        "lib/internal/queues/index.d.ts"
-      ],
-      "cache": [
-        "lib/internal/cache/index.d.ts"
-      ],
-      "jwt": [
-        "lib/internal/jwt/index.d.ts"
-      ],
-      "hash": [
-        "lib/internal/hash/index.d.ts"
-      ],
-      "shared": [
-        "lib/shared/index.d.ts"
-      ],
-      "schedules": [
-        "lib/internal/schedules/index.d.ts"
-      ]
-    }
   },
   "scripts": {
     "dev": "tsc --watch --declaration"

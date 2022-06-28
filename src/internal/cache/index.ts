@@ -1,4 +1,4 @@
-import duration from "#shared/duration.js";
+import duration from "../../shared/duration";
 
 function stringify(prev: any, next: any): string {
   if (String(next) === "[object Object]") next = JSON.stringify(next);
