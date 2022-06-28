@@ -4,6 +4,10 @@
   "description": "",
   "main": "./lib/index.js",
   "type": "module",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "imports": {
     "#internal/*": "./lib/internal/*",
     "#shared/*": "./lib/shared/*"
