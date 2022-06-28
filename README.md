@@ -1,6 +1,12 @@
 An easily-describable backend framework with a Next.js-like, declarative filesystem-based
 API structure.
 
+# Installation
+
+```bash
+npm i @prism/server
+```
+
 # Quickstart
 
 ```typescript
