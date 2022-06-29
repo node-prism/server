@@ -22,6 +22,7 @@
   "scripts": {
     "dev": "tsc --watch --declaration"
   },
+  "types": "./lib/index.d.ts",
   "author": "",
   "license": "ISC",
   "devDependencies": {
