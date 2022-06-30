@@ -17,52 +17,12 @@
  * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/**
- * A week in milliseconds.
- *
- * @private
- * @const {number}
- */
 const _WEEK_IN_MS = 604800000
-
-/**
- * A day in milliseconds
- *
- * @private
- * @const {number}
- */
 const _DAY_IN_MS = 86400000
-
-/**
- * An hour in milliseconds.
- *
- * @private
- * @const {number}
- */
 const _HOUR_IN_MS = 3600000
-
-/**
- * A minute in milliseconds.
- *
- * @private
- * @const {number}
- */
 const _MINUTE_IN_MS = 60000
-
-/**
- * A second in milliseconds.
- *
- * @private
- * @const {number}
- */
 const _SECOND_IN_MS = 1000
 
-/**
- * A map of key-value units for more compact duration parsing.
- *
- * @private
- * @const {Object}
- */
 const _unitMap = {
   // weeks
   w: _WEEK_IN_MS,
@@ -108,40 +68,16 @@ const _unitMap = {
   milliseconds: 1
 }
 
-/**
- * The pattern for duration parsing.
- *
- * @private
- * @const {RegExp}
- */
+/** The pattern for duration parsing. */
 const _durationPattern = /(-?)([\d\s\-_,.]+)\s*([a-zA-Z]*)/g
 
-/**
- * The pattern to use, when sanitizing the parsed duration.
- *
- * @private
- * @const {RegExp}
- */
+/** The pattern to use, when sanitizing the parsed duration. */
 const _sanitizePattern = /[\s\-_,]/g
 
-/**
- * The cache to store the results based on the given arguments.
- *
- * @private
- * @type {Object}
- */
+/** The cache to store the results based on the given arguments. */
 const _resultCache = {}
 
-/**
- * Determines whether the given input is valid.
- *
- * @private
- * @function _isValid
- *
- * @param {*} object - The object to check, whether it has a valid value to use for duration parsing.
- *
- * @returns {boolean} The validity of the input
- */
+/** Determines whether the given input is valid. */
 function _isValid (object: any) {
   return (typeof object === 'string' && object.length > 0) ||
     (typeof object === 'number' && object > -Infinity && object < Infinity && !isNaN(object))
@@ -260,7 +196,7 @@ function _isValid (object: any) {
  * @returns {number} The duration in number.
  *                   If the given duration is invalid, the returned duration will be `0` *(zero)*.
  */
-function duration (duration: any, defaultOrOptions?: any, options?: any) {
+function duration (duration: any, defaultOrOptions?: any, options?: any): number {
   // process options --------------------------------------------------------------------------------------------------*
   options = options || (defaultOrOptions && typeof defaultOrOptions === 'object' ? defaultOrOptions : {})
   const defaultDuration = _isValid(defaultOrOptions) ? defaultOrOptions : 0
@@ -345,7 +281,7 @@ function duration (duration: any, defaultOrOptions?: any, options?: any) {
  * @see {@link @standards/duration~duration}
  * @function createCustom
  *
- * @param {string|number|*} [duration] - The duration(s) to parse.
+ * @param {string|number|*} [duration_] - The duration(s) to parse.
  * @param {string|number|durationOptions} [defaultOrOptions] - The default duration as a fallback or additional options.
  * @param {durationOptions} [options] - Additional options to change the default behavior.
  *
@@ -370,9 +306,9 @@ function duration (duration: any, defaultOrOptions?: any, options?: any) {
  * // will return 2 hours in seconds, since the return unit is "sec"
  * custom('2 hours') // === 7200
  *
- * @returns {duration} The customized duration function.
+ * @returns {Function} The customized duration function.
  */
-function createCustom (duration_: any, defaultOrOptions: any, options: any) {
+function createCustom (duration_: any, defaultOrOptions: any, options: any): Function {
   return function durationCustom (dur: any, def: any, opt: any) {
     dur = typeof dur === 'string' || typeof dur === 'number' ? dur : duration_
 
