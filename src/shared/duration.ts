@@ -17,11 +17,11 @@
  * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-const _WEEK_IN_MS = 604800000
-const _DAY_IN_MS = 86400000
-const _HOUR_IN_MS = 3600000
-const _MINUTE_IN_MS = 60000
-const _SECOND_IN_MS = 1000
+const _WEEK_IN_MS = 604800000;
+const _DAY_IN_MS = 86400000;
+const _HOUR_IN_MS = 3600000;
+const _MINUTE_IN_MS = 60000;
+const _SECOND_IN_MS = 1000;
 
 const _unitMap = {
   // weeks
@@ -65,22 +65,27 @@ const _unitMap = {
   msecs: 1,
   millisec: 1,
   millisecond: 1,
-  milliseconds: 1
-}
+  milliseconds: 1,
+};
 
 /** The pattern for duration parsing. */
-const _durationPattern = /(-?)([\d\s\-_,.]+)\s*([a-zA-Z]*)/g
+const _durationPattern = /(-?)([\d\s\-_,.]+)\s*([a-zA-Z]*)/g;
 
 /** The pattern to use, when sanitizing the parsed duration. */
-const _sanitizePattern = /[\s\-_,]/g
+const _sanitizePattern = /[\s\-_,]/g;
 
 /** The cache to store the results based on the given arguments. */
-const _resultCache = {}
+const _resultCache = {};
 
 /** Determines whether the given input is valid. */
-function _isValid (object: any) {
-  return (typeof object === 'string' && object.length > 0) ||
-    (typeof object === 'number' && object > -Infinity && object < Infinity && !isNaN(object))
+function _isValid(object: any) {
+  return (
+    (typeof object === "string" && object.length > 0) ||
+    (typeof object === "number" &&
+      object > -Infinity &&
+      object < Infinity &&
+      !isNaN(object))
+  );
 }
 
 /**
@@ -198,24 +203,24 @@ function _isValid (object: any) {
  */
 function duration (duration: any, defaultOrOptions?: any, options?: any): number {
   // process options --------------------------------------------------------------------------------------------------*
-  options = options || (defaultOrOptions && typeof defaultOrOptions === 'object' ? defaultOrOptions : {})
-  const defaultDuration = _isValid(defaultOrOptions) ? defaultOrOptions : 0
-  const unit = typeof options.unit === 'string' ? options.unit.toLowerCase() : 'ms'
-  const round = typeof options.round === 'boolean' ? options.round : true
+  options = options || (defaultOrOptions && typeof defaultOrOptions === "object" ? defaultOrOptions : {});
+  const defaultDuration = _isValid(defaultOrOptions) ? defaultOrOptions : 0;
+  const unit = typeof options.unit === "string" ? options.unit.toLowerCase() : "ms";
+  const round = typeof options.round === "boolean" ? options.round : true;
 
   // utilize the cache and return if the cached input exists ----------------------------------------------------------*
-  const input = duration + '' + defaultDuration + '' + unit + '' + round
-  const cached = input in _resultCache
+  const input = duration + "" + defaultDuration + "" + unit + "" + round;
+  const cached = input in _resultCache;
 
   if (cached) {
-    return _resultCache[input]
+    return _resultCache[input];
   }
 
   // process duration -------------------------------------------------------------------------------------------------*
-  duration = _isValid(duration) ? duration : defaultDuration
+  duration = _isValid(duration) ? duration : defaultDuration;
 
-  if (typeof duration === 'string') {
-    let parsedDuration = 0
+  if (typeof duration === "string") {
+    let parsedDuration = 0;
 
     /* istanbul ignore else */
     if (duration.length > 0) {
@@ -227,52 +232,52 @@ function duration (duration: any, defaultOrOptions?: any, options?: any): number
       */
       for (let matches, matchedValue, matchedUnit; (matches = _durationPattern.exec(duration));) {
         // parse the value part after sanitizing it
-        matchedValue = parseFloat(matches[2].replace(_sanitizePattern, ''))
+        matchedValue = parseFloat(matches[2].replace(_sanitizePattern, ""));
 
         // if the match has a negative sign
         if (matches[1]) {
-          matchedValue = -matchedValue
+          matchedValue = -matchedValue;
         }
 
         if (!isNaN(matchedValue)) {
           // use the passed unit, otherwise the default unit will be milliseconds ('ms')
-          matchedUnit = matches[3].toLowerCase() || 'ms'
+          matchedUnit = matches[3].toLowerCase() || "ms";
 
           if (matchedUnit in _unitMap) {
-            parsedDuration += matchedValue * _unitMap[matchedUnit]
+            parsedDuration += matchedValue * _unitMap[matchedUnit];
           }
         }
       }
     }
 
-    duration = parsedDuration
+    duration = parsedDuration;
   }
 
   // converts the duration to the given unit --------------------------------------------------------------------------*
   // if the unit is valid, divide with the value of the given unit from the map, otherwise the duration will be 0
   if (unit in _unitMap) {
-    duration /= _unitMap[unit]
+    duration /= _unitMap[unit];
   } else {
-    duration = 0
+    duration = 0;
   }
 
   // only round, when it's sensible
   if (duration !== 0 && round) {
-    duration = Math.round(duration)
+    duration = Math.round(duration);
 
     // prevent -0 after rounding
     if (duration === 0) {
-      duration = Math.abs(duration)
+      duration = Math.abs(duration);
     }
   }
 
   // store the result in the cache if it's unstored
   /* istanbul ignore else */
   if (!cached) {
-    _resultCache[input] = duration
+    _resultCache[input] = duration;
   }
 
-  return duration
+  return duration;
 }
 
 /**
@@ -310,36 +315,36 @@ function duration (duration: any, defaultOrOptions?: any, options?: any): number
  */
 function createCustom (duration_: any, defaultOrOptions: any, options: any): Function {
   return function durationCustom (dur: any, def: any, opt: any) {
-    dur = typeof dur === 'string' || typeof dur === 'number' ? dur : duration_
+    dur = typeof dur === "string" || typeof dur === "number" ? dur : duration_;
 
-    let defaultDuration = typeof defaultOrOptions === 'string' || typeof defaultOrOptions === 'number'
+    let defaultDuration = typeof defaultOrOptions === "string" || typeof defaultOrOptions === "number"
       ? defaultOrOptions
-      : 0
+      : 0;
 
-    if (typeof def === 'string' || typeof def === 'number') {
-      defaultDuration = def
+    if (typeof def === "string" || typeof def === "number") {
+      defaultDuration = def;
     }
 
     // default options given upon creating the custom duration function
-    let defaultOptions = defaultOrOptions && typeof defaultOrOptions === 'object'
+    let defaultOptions = defaultOrOptions && typeof defaultOrOptions === "object"
       ? defaultOrOptions
-      : {}
+      : {};
 
-    if (options && typeof options === 'object') {
-      defaultOptions = options
+    if (options && typeof options === "object") {
+      defaultOptions = options;
     }
 
     // options, when called the customized duration function with
-    opt = opt || (def && typeof def === 'object' ? def : {})
+    opt = opt || (def && typeof def === "object" ? def : {});
 
     // merge the options, default options given upon creating the custom duration function will be override
     // with the options, when called the customized duration function with
-    opt = Object.assign(defaultOptions, opt)
+    opt = Object.assign(defaultOptions, opt);
 
-    return duration(dur, defaultDuration, opt)
+    return duration(dur, defaultDuration, opt);
   }
 }
 
-export { createCustom }
+export { createCustom };
 
 export default duration;
