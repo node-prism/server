@@ -10,19 +10,46 @@
   },
   "exports": {
     ".": "./lib/index.js",
-    "./http": "./lib/internal/http/index.js",
-    "./ws": "./lib/internal/ws/index.js",
-    "./hash": "./lib/internal/hash/index.js",
-    "./queues": "./lib/internal/queues/index.js",
     "./cache": "./lib/internal/cache/index.js",
+    "./hash": "./lib/internal/hash/index.js",
+    "./http": "./lib/internal/http/index.js",
     "./jwt": "./lib/internal/jwt/index.js",
+    "./queues": "./lib/internal/queues/index.js",
+    "./schedules": "./lib/internal/schedules/index.js",
     "./shared": "./lib/shared/index.js",
-    "./schedules": "./lib/internal/schedules/index.js"
+    "./ws": "./lib/internal/ws/index.js"
   },
   "scripts": {
     "dev": "tsc --watch --declaration"
   },
-  "types": "./lib/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "cache": [
+        "lib/internal/cache/index.d.ts"
+      ],
+      "hash": [
+        "lib/internal/hash/index.d.ts"
+      ],
+      "http": [
+        "lib/internal/http/index.d.ts"
+      ],
+      "jwt": [
+        "lib/internal/jwt/index.d.ts"
+      ],
+      "queues": [
+        "lib/internal/queues/index.d.ts"
+      ],
+      "schedules": [
+        "lib/internal/schedules/index.d.ts"
+      ],
+      "shared": [
+        "lib/shared/index.d.ts"
+      ],
+      "ws": [
+        "lib/internal/ws/index.d.ts"
+      ]
+    }
+  },
   "author": "",
   "license": "ISC",
   "devDependencies": {
