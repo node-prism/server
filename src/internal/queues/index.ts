@@ -6,7 +6,7 @@ import logger, { LogLevel } from "../../shared/logger";
 import { invariant } from "../../shared/utils";
 import { duration, getUuid, sleep } from "../../shared";
 import loadModule from "../../internal/loader/main";
-import { PrismApp } from "../../";
+import { PrismApp } from "../../shared/definitions";
 
 
 interface QueueConfig {

@@ -4,7 +4,7 @@ import cron from "node-cron";
 import { ScheduleModuleExports } from "../../shared/definitions";
 import { invariant } from "../../shared/utils";
 import loadModule from "../../internal/loader/main";
-import { PrismApp } from "../../";
+import { PrismApp } from "../../shared/definitions";
 
 export { CRON } from "./common";
 

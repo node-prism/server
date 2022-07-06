@@ -10,18 +10,12 @@ import createSchedules from "./internal/schedules";
 import { createSocketHandlers } from "./internal/ws/main";
 import { WebSocketTokenServer } from "./internal/ws/server";
 import { LogLevel } from "./shared";
+import { PrismApp } from "./shared/definitions";
 import logger from "./shared/logger";
 import selfPath from "./shared/path";
 
 
 dotenv.config();
-
-export interface PrismApp {
-  app: express.Application;
-  server: ServerHTTP | ServerHTTPS;
-  root: string;
-  wss: WebSocketTokenServer;
-}
 
 export async function createApi(appRoot: string, app: express.Express, server: ServerHTTP | ServerHTTPS): Promise<PrismApp> {
   const api = {

@@ -1,10 +1,21 @@
-import { SocketMiddleware } from "../internal/ws/server";
+import { SocketMiddleware, WebSocketTokenServer } from "../internal/ws/server";
 import Queue from "../internal/queues/index";
+import express from "express";
+import { Server as ServerHTTP } from "http";
+import { Server as ServerHTTPS } from "http";
+
 
 type Method = {
   (): any;
   middleware?: Function;
 };
+
+export interface PrismApp {
+  app: express.Application;
+  server: ServerHTTP | ServerHTTPS;
+  root: string;
+  wss: WebSocketTokenServer;
+}
 
 export interface HTTPModuleExports {
   default?: Function;

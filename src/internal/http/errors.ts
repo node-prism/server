@@ -1,7 +1,7 @@
 import path from "node:path";
 import { existsSync } from "node:fs";
 import loadModule from "../../internal/loader/main";
-import { PrismApp } from "../../";
+import { PrismApp } from "../../shared/definitions";
 
 /**
  * Finds `errors.ts` at @param rootDir. If this file exists,

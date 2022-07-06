@@ -14,7 +14,7 @@ import loadModule from "../../internal/loader/main";
 import loadMiddleware from "../../internal/loader/middleware";
 
 import ExpressContext from "./context";
-import { PrismApp } from "../../";
+import { PrismApp } from "../../shared/definitions";
 
 function getRelevantRoute(route: string, req: Request) {
   let ret = {

@@ -8,7 +8,7 @@ import { WebSocket } from "ws";
 import loadModule from "../../internal/loader/main";
 import loadMiddleware from "../../internal/loader/middleware";
 import { SocketMiddleware } from "./server";
-import { PrismApp } from "../../";
+import { PrismApp } from "../../shared/definitions";
 
 /**
  * socket
