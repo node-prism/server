@@ -1,6 +1,4 @@
 import { SocketMiddleware } from "../internal/ws/server";
-import { Server } from "node:http";
-import { Express } from "express";
 import Queue from "../internal/queues/index";
 
 type Method = {
