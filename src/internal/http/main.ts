@@ -14,6 +14,7 @@ import loadModule from "../../internal/loader/main";
 import loadMiddleware from "../../internal/loader/middleware";
 
 import ExpressContext from "./context";
+import { PrismApp } from "../../";
 
 function getRelevantRoute(route: string, req: Request) {
   let ret = {
@@ -76,12 +77,12 @@ function createRouteHandlers(
   module: HTTPModuleExports,
   middleware: any,
   route: string,
-  core: HTTPCore
+  app: PrismApp
 ) {
   logger({ level: LogLevel.DEBUG, scope: "http" }, route);
 
   if (module.default && typeof module.default === "function") {
-    core.app.all(route, ...middleware, wrapHandler(module.default, route));
+    app.app.all(route, ...middleware, wrapHandler(module.default, route));
     logger(
       { level: LogLevel.DEBUG, scope: "http" },
       `${route} | method: any -> export default`
@@ -100,7 +101,7 @@ function createRouteHandlers(
           methodMiddleware
         );
 
-      core.app[method === "del" ? "delete" : method](
+      app.app[method === "del" ? "delete" : method](
         route,
         [...middleware, ...methodMiddleware],
         wrapHandler(module[method], route)
@@ -117,10 +118,9 @@ function createRouteHandlers(
 }
 
 export default async function createHTTPHandlers(
-  core: HTTPCore,
-  rootDir: string
+  app: PrismApp,
 ): Promise<RouteDefinition[]> {
-  const p = path.join(rootDir, "/http/");
+  const p = path.join(app.root, "/http/");
   const filenames = await glob(`${p}**/[!_]*.{mjs,js,jsx,ts,tsx}`);
   const dupes = new Map<string, string>();
 
@@ -168,7 +168,7 @@ export default async function createHTTPHandlers(
     const module = await loadModule<HTTPModuleExports>(filename);
     invariant(module, `failed to load module ${filename}`);
 
-    let route = pathFromFilename(filename.replace(`${rootDir}/http/`, "/"));
+    let route = pathFromFilename(filename.replace(`${app.root}/http/`, "/"));
     // .build/api/_authenticated/admin/index.ts -> .build/api/admin/index.ts
     route = route.replace(/\/\_(?:\w|['-]\w)+\//g, "/");
 
@@ -193,7 +193,7 @@ export default async function createHTTPHandlers(
     );
     middleware = wrapMiddlewareWithHTTPContext(route, middleware);
 
-    createRouteHandlers(module, middleware, route, core);
+    createRouteHandlers(module, middleware, route, app);
     defs.push({ route, filename });
   }
 
