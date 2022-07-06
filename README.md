@@ -13,7 +13,16 @@ npm i @prism/server
 // /src/index.ts
 import { createAPI } from "@prism/server";
 
-await createAPI("src/app");
+// Create an express server.
+const app = express();
+const server = createServer(app);
+
+// Tell express to parse incoming requests with JSON payloads.
+app.use(express.json());
+
+// Travel the "app" folder, discovering modules and using them to create route handlers.
+const prism = await createApi("app", app, server);
+prism.server.listen(3000);
 ```
 
 The typical folder structure looks something like this:
