@@ -1,12 +1,14 @@
 import dotenv from "dotenv";
 import express from "express";
-import { createServer } from "http";
+import { Server as ServerHTTP } from "http";
+import { Server as ServerHTTPS } from "http";
 import path from "path";
 import createErrorHandlers from "./internal/http/errors";
 import createHTTPHandlers from "./internal/http/main";
 import { createQueues } from "./internal/queues";
 import createSchedules from "./internal/schedules";
 import { createSocketHandlers } from "./internal/ws/main";
+import { WebSocketTokenServer } from "./internal/ws/server";
 import { LogLevel } from "./shared";
 import { HTTPCore } from "./shared/definitions";
 import logger from "./shared/logger";
@@ -15,54 +17,35 @@ import selfPath from "./shared/path";
 
 dotenv.config();
 
-function applyDefaultSecurity(app: express.Application) {
-  // disable x-powered-by header
-  app.disable("x-powered-by");
-
-  // disable MIME sniffing
-  app.set("x-content-type-options", "nosniff");
-
-  // disable IE compat mode
-  app.set("x-ua-compatible", "ie=edge");
-
-  // re-enable xss filter if disabled
-  app.set("x-xss-protection", "1; mode=block");
+export interface PrismApp {
+  app: express.Application;
+  server: ServerHTTP | ServerHTTPS;
+  root: string;
+  wss: WebSocketTokenServer;
 }
 
-export async function createAPI(
-  rootDir: string,
-  middlewares: Function[] = []
-): Promise<HTTPCore> {
-  const app = express();
-  const server = createServer(app);
-  const root = path.resolve(path.dirname(selfPath()));
-  const core = { app, server, root };
-
-  applyDefaultSecurity(core.app);
-
-  core.app.use(express.json());
-
-  middlewares.forEach((m) => {
-    core.app.use(m as any);
-  });
-
-  core.app.set("view engine", "ejs");
-  core.app.set("views", path.join(root, process.env.VIEWS_PATH ?? "/views/"));
+export async function createApi(appRoot: string, app: express.Express, server: ServerHTTP | ServerHTTPS): Promise<PrismApp> {
+  const api = {
+    app,
+    server,
+    root: path.join("/", path.resolve(path.dirname(selfPath()), appRoot)),
+    wss: new WebSocketTokenServer({ path: "/" })
+  };
 
   try {
-    await createHTTPHandlers(core, rootDir);
-    await createSocketHandlers(core, rootDir);
-    await createQueues(core, rootDir);
-    await createSchedules(core, rootDir);
+    await createHTTPHandlers(api);
+    await createSocketHandlers(api);
+    await createQueues(api);
+    await createSchedules(api);
   } catch (e) {
     logger({ level: LogLevel.ERROR }, String(e));
     throw e;
   }
 
-  await createErrorHandlers(core, rootDir);
+  await createErrorHandlers(api);
 
-  return core;
+  return api;
 }
 
-export {HTTPCore};
+export { HTTPCore };
 
