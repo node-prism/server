@@ -30,12 +30,6 @@ export interface RouteDefinition {
   filename: string;
 }
 
-export interface HTTPCore {
-  app: Express;
-  server: Server;
-  root: string;
-}
-
 export interface QueueModuleExports {
   default: Function;
   queue: Queue<any>;

@@ -1,7 +1,7 @@
 import logger, { LogLevel } from "../../shared/logger";
 import glob from "fast-glob";
 import cron from "node-cron";
-import { HTTPCore, ScheduleModuleExports } from "../../shared/definitions";
+import { ScheduleModuleExports } from "../../shared/definitions";
 import { invariant } from "../../shared/utils";
 import loadModule from "../../internal/loader/main";
 import { PrismApp } from "../../";

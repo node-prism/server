@@ -1,4 +1,3 @@
-import { HTTPCore } from ".";
 import path from "node:path";
 import { existsSync } from "node:fs";
 import loadModule from "../../internal/loader/main";

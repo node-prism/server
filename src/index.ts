@@ -10,7 +10,6 @@ import createSchedules from "./internal/schedules";
 import { createSocketHandlers } from "./internal/ws/main";
 import { WebSocketTokenServer } from "./internal/ws/server";
 import { LogLevel } from "./shared";
-import { HTTPCore } from "./shared/definitions";
 import logger from "./shared/logger";
 import selfPath from "./shared/path";
 
@@ -46,6 +45,4 @@ export async function createApi(appRoot: string, app: express.Express, server: S
 
   return api;
 }
-
-export { HTTPCore };
 

@@ -5,7 +5,6 @@ import { isPromise } from "node:util/types";
 import { Key, pathToRegexp } from "path-to-regexp";
 import { LogLevel } from "../../shared";
 import {
-  HTTPCore,
   HTTPModuleExports,
   RouteDefinition,
 } from "../../shared/definitions";
