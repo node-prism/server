@@ -2,17 +2,15 @@ import { HTTPCore } from ".";
 import path from "node:path";
 import { existsSync } from "node:fs";
 import loadModule from "../../internal/loader/main";
+import { PrismApp } from "../../";
 
 /**
  * Finds `errors.ts` at @param rootDir. If this file exists,
  * it is expected to export default an array of express-compatible
  * error handlers. These error handlers will be registered with core.app.
  */
-export default async function createErrorHandlers(
-  core: HTTPCore,
-  rootDir: string
-): Promise<any> {
-  const errorsFile = path.join(rootDir, "/errors.ts");
+export default async function createErrorHandlers(app: PrismApp): Promise<any> {
+  const errorsFile = path.join(app.root, "/errors.ts");
   if (!existsSync(errorsFile)) {
     return;
   }
@@ -27,6 +25,6 @@ export default async function createErrorHandlers(
   }
 
   handlers.forEach(handler => {
-    core.app.use(handler);
+    app.app.use(handler);
   });
 }

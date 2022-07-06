@@ -2,13 +2,13 @@ import glob from "fast-glob";
 import { IncomingMessage, STATUS_CODES } from "node:http";
 import path from "node:path";
 import { parse } from "node:url";
-import { HTTPCore, SocketModuleExports } from "../../shared/definitions";
+import { SocketModuleExports } from "../../shared/definitions";
 import logger, { LogLevel } from "../../shared/logger";
 import { WebSocket } from "ws";
 import loadModule from "../../internal/loader/main";
 import loadMiddleware from "../../internal/loader/middleware";
-
-import { SocketMiddleware, WebSocketTokenServer } from "./server";
+import { SocketMiddleware } from "./server";
+import { PrismApp } from "../../";
 
 /**
  * socket
@@ -39,45 +39,31 @@ async function getSocketMiddleware(module: SocketModuleExports, filename: string
  *
  * The module's default export is the command executor.
  */
-export async function createSocketHandlers(core: HTTPCore, rootDir: string) {
-  const p = path.join(rootDir, "/socket/");
+export async function createSocketHandlers(app: PrismApp) {
+  const p = path.join(app.root, "/socket/");
   const filenames = await glob(`${p}**/[!_]*.{mjs,js,jsx,ts,tsx}`);
-  const handlers = new Map<string, WebSocketTokenServer>();
 
   for (const filename of filenames) {
     const module = await loadModule<SocketModuleExports>(filename);
     if (!module) throw new Error(`Failed to load module: ${filename}`);
     if (!module.default) throw new Error(`Socket command modules must export default.`);
 
-    let route = parentDirname(filename.replace(`${rootDir}/socket/`, "/"));
+    let route = parentDirname(filename.replace(`${app.root}/socket/`, "/"));
     logger({ level: LogLevel.DEBUG, scope: "ws" }, "socket namespace:", route);
 
     route = route.replace(/\/\_(?:\w|['-]\w)+\//g, "/");
 
-    // if (!handlers.get(route)) {
-    //   handlers.set(route, new WebSocketTokenServer({ path: route, noServer: true }));
-    // }
-    if (!handlers.get("/")) {
-      handlers.set("/", new WebSocketTokenServer({ path: "/", noServer: true }));
-    }
-
     const cmd = path.normalize(`${route}/${path.basename(filename, path.extname(filename)).normalize()}`);
     const middleware = await getSocketMiddleware(module, filename);
 
-    // handlers.get(route).registerCommand(cmd, module.default, ...middleware);
-    handlers.get("/").registerCommand(cmd, module.default, ...middleware);
+    app.wss.registerCommand(cmd, module.default, ...middleware);
     logger({ level: LogLevel.DEBUG, scope: "ws" }, `command: ${cmd} (wscat -c ws://localhost:PORT/ -x '{"command": "${cmd}", "payload": {}}')`);
   }
 
-  core.server.on("upgrade", (req, socket, head) => {
+  app.server.on("upgrade", (req, socket, head) => {
     const { pathname } = parse(req.url);
-    const handler = handlers.get(pathname);
 
-    if (handler) {
-      handler.handleUpgrade(req, socket, head, (client: WebSocket, req: IncomingMessage) => {
-        handler.emit("connection", client, req);
-      });
-    } else {
+    if (pathname !== "/") {
       socket.write([
         `HTTP/1.0 400 ${STATUS_CODES[400]}`,
         "Connection: close",
@@ -86,8 +72,15 @@ export async function createSocketHandlers(core: HTTPCore, rootDir: string) {
         "",
         STATUS_CODES[400],
       ].join("\r\n"));
+
       socket.destroy();
+
+      return;
     }
+
+    app.wss.handleUpgrade(req, socket, head, (client: WebSocket, req: IncomingMessage) => {
+      app.wss.emit("connection", client, req);
+    });
   });
 }
 

@@ -7,6 +7,7 @@ import { invariant } from "../../shared/utils";
 import { duration, getUuid, sleep } from "../../shared";
 import { HTTPCore } from "../../internal/http";
 import loadModule from "../../internal/loader/main";
+import { PrismApp } from "../../";
 
 
 interface QueueConfig {
@@ -44,8 +45,8 @@ function validateQueueModuleExports(module: any) {
   }
 }
 
-export async function createQueues(_core: HTTPCore, rootDir: string) {
-  const filenames = await glob(`${rootDir}/queues/**/[!_]*.{mjs,js,jsx,ts,tsx}`);
+export async function createQueues(app: PrismApp) {
+  const filenames = await glob(`${app.root}/queues/**/[!_]*.{mjs,js,jsx,ts,tsx}`);
 
   for (const filename of filenames) {
     const module = await loadModule<QueueModuleExports>(filename);
