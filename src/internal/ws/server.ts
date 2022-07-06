@@ -147,20 +147,16 @@ interface SocketServerOptions extends ServerOptions {
   // }
 }
 
-function getServerOptions(opts: SocketServerOptions): SocketServerOptions {
-  opts.noServer = true;
-  return opts;
-}
-
 export class WebSocketTokenServer extends WebSocketServer {
   connections: { [connectionId: string]: Connection } = {};
   commands: { [commandName: string]: Function } = {};
   globalMiddlewares: SocketMiddleware[] = [];
   middlewares: { [key: string]: SocketMiddleware[] } = {};
   remoteAddressToConnections: { [address: string]: Connection[] } = {};
+  rooms: { [roomName: string]: string[] } = {};
 
   constructor(opts: SocketServerOptions) {
-    super(getServerOptions(opts));
+    super({ ...opts, noServer: true });
     this.applyListeners();
   }
 
@@ -185,12 +181,26 @@ export class WebSocketTokenServer extends WebSocketServer {
         connection,
       ].concat(this.remoteAddressToConnections[req.socket.remoteAddress] || []);
 
+      // Emit a "connected" event with the Connection object.
+      this.emit("connected", connection);
+
       connection.once("close", () => {
         this.destroyConnection(connection);
         this.emit("close", connection);
-        // TODO: If a ping timeout emitted 'close' and we
-        // ended up here, then the socket may still be open.
-        // Maybe we should try and close it?
+        // It's possible that the socket is still open, because
+        // a ping timeout will emit `close` (see Connection -> startIntervals)
+        // without closing the socket.
+        // So, we check if the socket is still actually open and close it.
+        if (socket.readyState === WebSocket.OPEN) {
+          socket.close();
+        }
+
+        // Remove this Connection from any rooms it may be in.
+        Object.keys(this.rooms).forEach((roomName) => {
+          this.rooms[roomName] = this.rooms[roomName].filter(
+            (id) => id !== connection.id
+          );
+        });
       });
 
       connection.on("message", (buf: Buffer) => {
@@ -204,8 +214,16 @@ export class WebSocketTokenServer extends WebSocketServer {
     });
   }
 
-  broadcast(command: string, payload: any) {
+  broadcast(command: string, payload: any, connections?: Connection[]) {
     const cmd = JSON.stringify({ command, payload });
+
+    if (connections) {
+      connections.forEach((c) => {
+        c.socket.send(cmd);
+      });
+
+      return;
+    }
     Object.values(this.connections).forEach((c) => {
       c.socket.send(cmd);
     });
@@ -234,6 +252,31 @@ export class WebSocketTokenServer extends WebSocketServer {
       this.middlewares[command] = this.middlewares[command] || [];
       this.middlewares[command] = middlewares.concat(this.middlewares[command]);
     }
+  }
+
+  /**
+   * @example
+   * ```typescript
+   * server.registerCommand("join:room", async (payload: { roomName: string }, connection: Connection) => {
+   *   server.addToRoom(payload.roomName, connection);
+   *   server.broadcastRoom(payload.roomName, "joined", { roomName: payload.roomName });
+   * });
+   * ```
+   */
+  addToRoom(roomName: string, connection: Connection) {
+    this.rooms[roomName] = this.rooms[roomName] || [];
+    if (!this.rooms[roomName].includes(connection.id)) {
+      this.rooms[roomName].push(connection.id);
+    }
+  }
+
+  removeFromRoom(roomName: string, connection: Connection) {
+    if (!this.rooms[roomName]) return;
+    this.rooms[roomName] = this.rooms[roomName].filter((id) => id !== connection.id);
+  }
+
+  clearRoom(roomName: string) {
+    this.rooms[roomName] = [];
   }
 
   async runCommand(id: number, command: string, payload: any, connection: Connection) {
