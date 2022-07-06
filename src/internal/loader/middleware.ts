@@ -4,7 +4,7 @@ import logger, { LogLevel } from "../../shared/logger";
 
 export default async function loadMiddleware<T>(dirname: string, filename: string, defaultMiddleware: T[] = []): Promise<T[]> {
   const parent =
-    dirname === "."
+    dirname === "/"
       ? defaultMiddleware
       : await loadMiddleware(
           path.dirname(dirname),
