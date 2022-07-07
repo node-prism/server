@@ -6,8 +6,6 @@ function stringify(prev: any, next: any): string {
 }
 
 interface CacheEntry {
-  /** On entry, this gets the value of Date.now() */
-  entered: number;
   /** Unix timestamp signifying cache death. */
   death: number;
   /** The result of the cache callback. */
@@ -72,7 +70,7 @@ export default function useCache<T>(callback: (...callbackInputs: any) => T, inp
   }
 
   const output = callback(...inputs);
-  bucket.set(key, { entered: now, death: now + duration(death, "5m"), output });
+  bucket.set(key, { death: now + duration(death, "5m"), output });
 
   return output;
 }
