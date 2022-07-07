@@ -14,6 +14,8 @@ import { PrismApp } from "./shared/definitions";
 import logger from "./shared/logger";
 import selfPath from "./shared/path";
 
+export { PrismApp };
+
 
 dotenv.config();
 
