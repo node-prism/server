@@ -130,23 +130,6 @@ export class Connection extends EventEmitter {
 
 export type SocketMiddleware = (c: WSContext) => Promise<any>;
 
-interface SocketServerOptions extends ServerOptions {
-  // interface ServerOptions {
-  //     host?: string | undefined;
-  //     port?: number | undefined;
-  //     backlog?: number | undefined;
-  //     server?: HTTPServer | HTTPSServer | undefined;
-  //     verifyClient?: VerifyClientCallbackAsync | VerifyClientCallbackSync | undefined;
-  //     handleProtocols?: (protocols: Set<string>, request: IncomingMessage) => string | false;
-  //     path?: string | undefined;
-  //     noServer?: boolean | undefined;
-  //     clientTracking?: boolean | undefined;
-  //     perMessageDeflate?: boolean | PerMessageDeflateOptions | undefined;
-  //     maxPayload?: number | undefined;
-  //     skipUTF8Validation?: boolean | undefined;
-  // }
-}
-
 export class WebSocketTokenServer extends WebSocketServer {
   connections: { [connectionId: string]: Connection } = {};
   commands: { [commandName: string]: Function } = {};
@@ -155,7 +138,7 @@ export class WebSocketTokenServer extends WebSocketServer {
   remoteAddressToConnections: { [address: string]: Connection[] } = {};
   rooms: { [roomName: string]: string[] } = {};
 
-  constructor(opts: SocketServerOptions) {
+  constructor(opts: ServerOptions) {
     super({ ...opts, noServer: true });
     this.applyListeners();
   }
