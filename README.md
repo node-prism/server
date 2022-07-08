@@ -390,7 +390,7 @@ export default async function({ recipient, subject, body }) {
 
 # Sockets
 
-`/src/app/socket/jobs/start-job.ts` maps to a command named `/jobs/start-job` at
+`/src/app/socket/jobs/send-email.ts` maps to a command named `/jobs/send-email` at
 endpoint `ws://localhost:PORT/`. To execute a command, send a message with this shape:
 
 ```typescript
@@ -403,11 +403,35 @@ endpoint `ws://localhost:PORT/`. To execute a command, send a message with this 
 For example:
 
 ```bash
-wscat -c ws://localhost:3000/ -x '{"command": "/jobs/start-job", "payload": {}}'
+wscat -c ws://localhost:3000/ -x '{"command": "/jobs/send-email", "payload": { "recipient": "somebody@gmail.com" }}'
 ```
 
 The default export of a command file is the command handler and should
-be async. The handler's return value will be sent to the client.
+be async. The handler's return value will be sent to the client. A handler might
+look something like this:
+
+```typescript
+// /src/app/socket/jobs/send-email.ts
+
+import { MailQueueTask, queue as mailQueue } from "../../queues/email";
+
+export default async function(c: Context) {
+  const mail: MailQueueTask = {
+    recipient: c.payload.recipient,
+    subject: "Hello",
+    body: "...",
+  };
+
+  // When the queued job finishes, notify the socket client that initiated the job.
+  const callback = () => {
+    c.connection.send({ command: "job:status", payload: { message: "Job finished." } });
+  };
+
+  const uuid = mailQueue.group(mail.recipient).push(mail, { callback });
+
+  return { message: "Job created.", uuid };
+}
+```
 
 ## Socket middleware
 
