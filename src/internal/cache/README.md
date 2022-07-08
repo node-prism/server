@@ -9,13 +9,14 @@ The operation is stored in a `CacheMap` where the map key is
 the stringified inputs and the value is the result of `callback(...inputs)`.
 
 Until the lifetime defined by `cacheDuration` has passed,
-the cached result of the callback will be returned by the call to `useCache`.
+the cached result of the provided callback will be returned by the call to `useCache`.
 
 A usage example of this might be a middleware that caches the JWT signature
 verification result using the client IP and the JWT as the cache key:
 
 ```typescript
 // ip-jwt-verification-middleware.ts
+import { verify } from "@prism/server/jwt";
 
 export default async function(c: Context, { bearer }: { bearer: string }) {
   if (!bearer) {
