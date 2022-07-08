@@ -8,6 +8,12 @@ import { duration, getUuid, sleep } from "../../shared";
 import loadModule from "../../internal/loader/main";
 import { PrismApp } from "../../shared/definitions";
 
+interface QueueTask {
+  uuid: string;
+  payload: any;
+  callback?: ({ uuid, payload }: { uuid: string, payload: any }) => void;
+}
+
 
 interface QueueConfig {
   /** When a worker becomes free, it will wait `delay` before working. */
@@ -180,7 +186,7 @@ export default class Queue<Payload> extends EventEmitter {
 
     assert(nextTask, "expected the item list to contain an entry since findIndex() returned != -1.");
 
-    const { uuid, payload } = nextTask;
+    const { uuid, payload, callback } = nextTask;
 
     if (this.delay_ms) {
       await sleep(this.delay_ms);
@@ -189,6 +195,7 @@ export default class Queue<Payload> extends EventEmitter {
     if (this.timeout_ms) {
       try {
         await Promise.race([this.createTimeoutPromise(uuid), this.executor(payload)]);
+        callback({ uuid, payload });
         this.emitter.emit("complete", { task: { uuid, payload } });
         clearTimeout(this.timeouts[uuid]);
       } catch (err) {
@@ -197,6 +204,7 @@ export default class Queue<Payload> extends EventEmitter {
     } else {
       try {
         await this.executor(payload);
+        callback({ uuid, payload });
         this.emitter.emit("complete", { task: { uuid, payload } });
       } catch (err) {
         this.emitter.emit("failed", { task: { uuid, payload } });
@@ -220,7 +228,7 @@ export default class Queue<Payload> extends EventEmitter {
    * the length of the current bucketQueue, giving it the lowest
    * possible priority.
    */
-  push(payload: Payload, priority?: number) {
+  push(payload: Payload, { callback, priority }: { callback?: () => void, priority?: number } = {}) {
     if (priority === null || priority === undefined) {
       priority = this.bucketQueue.length;
     }
@@ -234,7 +242,7 @@ export default class Queue<Payload> extends EventEmitter {
       this.bucketQueue.push(...fillers);
     }
 
-    const task = { uuid: getUuid(), payload };
+    const task: QueueTask = { uuid: getUuid(), payload, callback };
 
     this.bucketQueue[priority].push(task);
     this.size += 1;
