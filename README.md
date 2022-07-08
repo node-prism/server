@@ -137,15 +137,18 @@ core.app.use((err, req, res, next) => {
 
 ## Flattened paths
 
-You can "flatten" a path on the filesystem by prefixing folders in its path with an underscore. In other words,
+You can "flatten" parts of a route path by prefixing corresponding filesystem folders with an underscore. In other words,
 
 ```bash
 /src/app/http/user/_authorized/profile.ts
 ```
 
-...is accessed at `/user/profile` because the `_authorized` folder is ignored as part of the path, i.e. it is flattened.
+...is mounted at `/user/profile` because the `_authorized` folder is effectively ignored (i.e., flattened).
 
-This flattening behavior is particularly useful when scoping your middlewares. Consider the following folder structure:
+Middlewares defined inside of flattened folders are still recognized and applied to sibling and child files.
+This can be a very useful pattern.
+
+Consider the following folder structure:
 
 ```bash
 ├── app
@@ -153,13 +156,13 @@ This flattening behavior is particularly useful when scoping your middlewares. C
 │   │   └── user
 │   │       ├── index.ts
 │   │       └── _authorized
-│   │           ├── _middleware.ts
+│   │           ├── _middleware.ts # some authorization middleware
 │   │           └── profile.ts
 └── index.ts
 ```
 
-The result of the above is that requests made to `/user` are not behind authorization middleware whereas
-requests to `/user/profile` are.
+The result of the above is that handlers at `/user` are not behind authorization middleware whereas
+handlers at `/user/profile` are.
 
 
 ## Reading the request body / query / path / headers
