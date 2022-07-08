@@ -45,6 +45,6 @@ export default async function(c: Context, { bearer }: { bearer: string }) {
     return;
   }
 
-  return Respond.Unauthorized(c, { [outputs.reason]: true });
+  return Respond.Unauthorized(c, { invalid: outputs.reason });
 }
 ```
