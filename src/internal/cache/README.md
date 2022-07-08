@@ -16,7 +16,9 @@ verification result using the client IP and the JWT as the cache key:
 
 ```typescript
 // ip-jwt-verification-middleware.ts
+import { Context, Respond } from "@prism/server/http";
 import { verify } from "@prism/server/jwt";
+import useCache from "@prism/server/cache";
 
 export default async function(c: Context, { bearer }: { bearer: string }) {
   if (!bearer) {
