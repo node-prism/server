@@ -104,7 +104,7 @@ export async function get(c: Context, { path: { id, rest } }) {
 ```
 
 Handlers are wrapped in order to automatically handle Promise rejections
-or thrown errors by passing them to the reigstered Express error middlewares.
+or thrown errors by passing them to the registered Express error middlewares.
 
 ```typescript
 function throws() {
