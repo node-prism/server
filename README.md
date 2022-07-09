@@ -125,12 +125,12 @@ forward errors to your error-handling middleware with `next(e)`, as this happens
 automatically for you.
 
 ```typescript
-const core = await createAPI("app");
+const prism = await createAPI("app", app, server);
 
 // Assuming `/src/app/errors.ts` doesn't exist and this is the first error handling
 // middleware that is defined, the above thrown error would be handled by this.
 
-core.app.use((err, req, res, next) => {
+prism.app.use((err, req, res, next) => {
   res.status(500).send("Something went horribly wrong!");
 });
 ```
@@ -428,7 +428,7 @@ export default [
 ];
 ```
 
-To fail from a middleware, throw an Error. Command execution will then end and the
+To fail from a socket middleware, just throw an Error. Command execution will then end and the
 command handler will not be called. The error message will be returned to the client,
 looking something like:
 
