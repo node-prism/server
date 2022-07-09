@@ -1,4 +1,4 @@
-import { SocketMiddleware, WebSocketTokenServer } from "../internal/ws/server";
+import { SocketMiddleware, WebSocketTokenServer, WSContext } from "../internal/ws/server";
 import Queue from "../internal/queues/index";
 import express from "express";
 import { Server as ServerHTTP } from "http";
@@ -30,7 +30,7 @@ export interface HTTPModuleExports {
 }
 
 export interface SocketModuleExports {
-  default?: Function;
+  default?: SocketMiddleware;
   middleware?: SocketMiddleware[];
 }
 

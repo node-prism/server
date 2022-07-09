@@ -225,7 +225,7 @@ export class WebSocketTokenServer extends WebSocketServer {
     });
   }
 
-  registerCommand(command: string, callback: Function, ...middlewares: SocketMiddleware[]) {
+  registerCommand(command: string, callback: SocketMiddleware, ...middlewares: SocketMiddleware[]): void {
     this.commands[command] = callback;
     this.addMiddlewareToCommand(command, ...middlewares);
   }
