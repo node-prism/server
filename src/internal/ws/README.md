@@ -51,3 +51,25 @@ const wstc = new WebSocketTokenClient("wss://localhost:3000");
 
 const reply = await wsts.command("auth:login", { token: "abc" });
 ```
+
+You can also explicitly send commands to clients, which clients can also listen for.
+
+```typescript
+// broadcast `hello` command to all connected clients
+wsts.broadcast("hello", { hello: "world" });
+```
+
+If you have the client `Connection` object, you can craft a command and send it with `send`.
+The `Connection` object is available on `WSContext`, which is provided to all command callbacks
+and middlewares.
+
+In this example, four separate messages are sent to the client.
+
+```typescript
+wsts.registerCommand("hello", (c: WSContext) => {
+  c.connection.send({ command: "hi", payload: { ... } });
+  c.connection.send({ command: "hey", payload: { ... } });
+  c.connection.send({ command: "hello", payload: { ... } });
+  return { howdy: "partner" };
+});
+```
