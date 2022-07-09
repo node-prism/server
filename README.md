@@ -237,33 +237,6 @@ export const middleware = {
 };
 ```
 
-## Global middleware
-
-Express expects you to register your global middlewares before you define
-any other routes. To do this with prism, pass an array of your middlewares as the 
-second parameter to `createAPI`:
-
-```typescript
-const globalMiddleware = [
-  (req: Request, res: Response, next: NextFunction) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "*");
-    res.header("Access-Control-Allow-Headers", "*");
-
-    if (req.method === "OPTIONS") {
-      return res.status(200).end();
-    }
-
-    return next();
-  }
-];
-
-const core = await createAPI("src/app", globalMiddleware);
-```
-
-This effectively registers `globalMiddleware` before traversing `src/app` and
-creates any routes.
-
 # Error middleware
 
 You can optionally place an `errors.ts` file at your application's root (e.g. `/app/errors.ts`)
